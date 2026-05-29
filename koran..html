@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Таджвид</title>
+<meta name="theme-color" content="#090b10">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Таджвид">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════
+   CSS VARIABLES — DARK / LIGHT
+══════════════════════════════════════════ */
+:root {
+  --bg:        #090b10;
+  --bg2:       #0e1118;
+  --surface:   #13161f;
+  --surface2:  #1c2030;
+  --surface3:  #242840;
+  --border:    #ffffff0f;
+  --border2:   #ffffff18;
+  --gold:      #c9933a;
+  --gold2:     #e8b96a;
+  --gold3:     #f5d08a;
+  --glow:      rgba(201,147,58,.18);
+  --green:     #34d399;
+  --green-bg:  #0d2e1e;
+  --blue:      #60a5fa;
+  --blue-bg:   #0d1e3a;
+  --purple:    #a78bfa;
+  --purple-bg: #1a1440;
+  --red:       #f87171;
+  --orange:    #fb923c;
+  --text:      #e6e8f0;
+  --text2:     #9ba3bf;
+  --text3:     #4e566e;
+  --radius:    16px;
+  --shadow:    0 8px 32px rgba(0,0,0,.45);
+}
+[data-theme="light"] {
+  --bg:        #f0f2f8;
+  --bg2:       #e8eaf2;
+  --surface:   #ffffff;
+  --surface2:  #f4f5fb;
+  --surface3:  #eaecf5;
+  --border:    #0000000c;
+  --border2:   #00000018;
+  --glow:      rgba(201,147,58,.10);
+  --text:      #12151e;
+  --text2:     #4e566e;
+  --text3:     #9ba3bf;
+  --green-bg:  #d1fae5;
+  --blue-bg:   #dbeafe;
+  --purple-bg: #ede9fe;
+  --shadow:    0 4px 20px rgba(0,0,0,.10);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html { scroll-behavior:smooth; }
+body {
+  font-family:'Nunito',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+  transition:background .3s,color .3s;
+}
+
+::-webkit-scrollbar { width:4px; height:4px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--border2); border-radius:99px; }
+
+#loginScreen {
+  min-height:100vh;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  padding:32px 20px;
+  background: radial-gradient(ellipse 80% 50% at 50% -10%, #1e1a0a 0%, transparent 70%), var(--bg);
+  position:relative; overflow:hidden;
+}
+#loginScreen::before {
+  content:'';
+  position:absolute; inset:0;
+  background: radial-gradient(circle at 20% 80%, rgba(201,147,58,.06) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(167,139,250,.05) 0%, transparent 50%);
+  pointer-events:none;
+}
+.login-emblem {
+  font-family:'Amiri',serif;
+  font-size:72px; line-height:1;
+  color:var(--gold);
+  filter:drop-shadow(0 0 24px var(--glow));
+  margin-bottom:12px;
+  animation:float 3s ease-in-out infinite;
+}
+@keyframes float {
+  0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)}
+}
+.login-title {
+  font-size:24px; font-weight:900; letter-spacing:-.3px;
+  background:linear-gradient(135deg,var(--gold3),var(--gold));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  margin-bottom:6px;
+}
+.login-sub { font-size:13px; color:var(--text2); margin-bottom:44px; }
+.login-cards { display:flex; gap:14px; width:100%; max-width:400px; }
+.login-card {
+  flex:1; background:var(--surface);
+  border:1px solid var(--border2);
+  border-radius:24px; padding:28px 16px 24px;
+  text-align:center; cursor:pointer;
+  transition:transform .25s, box-shadow .25s, border-color .25s;
+  position:relative; overflow:hidden;
+}
+.login-card::before {
+  content:'';
+  position:absolute; inset:0;
+  opacity:0; transition:opacity .3s;
+  background:radial-gradient(ellipse at center, var(--glow), transparent 70%);
+}
+.login-card:hover::before { opacity:1; }
+.login-card:hover { transform:translateY(-5px); box-shadow:0 16px 48px var(--glow); border-color:var(--gold); }
+.login-card:active { transform:scale(.97); }
+.login-card-icon { font-size:44px; margin-bottom:12px; display:block; }
+.login-card-title { font-size:16px; font-weight:900; margin-bottom:5px; }
+.login-card-desc { font-size:11px; color:var(--text2); line-height:1.5; }
+
+.overlay {
+  position:fixed; inset:0;
+  background:rgba(0,0,0,.7);
+  backdrop-filter:blur(8px);
+  z-index:900;
+  display:flex; align-items:center; justify-content:center;
+  padding:20px;
+  opacity:0; visibility:hidden;
+  transition:opacity .25s, visibility .25s;
+}
+.overlay.open { opacity:1; visibility:visible; }
+.modal {
+  background:var(--surface);
+  border:1px solid var(--border2);
+  border-radius:28px;
+  padding:28px 24px;
+  width:100%; max-width:360px;
+  transform:translateY(24px) scale(.97);
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+  max-height:90vh; overflow-y:auto;
+}
+.overlay.open .modal { transform:translateY(0) scale(1); }
+.modal-title { font-size:20px; font-weight:900; text-align:center; margin-bottom:4px; }
+.modal-sub { font-size:12px; color:var(--text2); text-align:center; margin-bottom:22px; }
+
+.pin-dots { display:flex; justify-content:center; gap:14px; margin-bottom:24px; }
+.pin-dot {
+  width:14px; height:14px; border-radius:50%;
+  background:var(--surface3); border:2px solid var(--border2);
+  transition:all .2s;
+}
+.pin-dot.filled { background:var(--gold); border-color:var(--gold); box-shadow:0 0 10px var(--glow); }
+.numpad { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+.num-btn {
+  background:var(--surface2); border:1px solid var(--border);
+  color:var(--text); font-family:'Nunito',sans-serif;
+  font-size:22px; font-weight:800;
+  padding:15px; border-radius:14px; cursor:pointer;
+  transition:all .15s;
+}
+.num-btn:active { background:var(--gold); color:#000; transform:scale(.93); }
+.pin-error { color:var(--red); font-size:12px; text-align:center; margin-top:10px; min-height:16px; font-weight:700; }
+
+.student-pick-list { display:flex; flex-direction:column; gap:8px; }
+.student-pick-item {
+  display:flex; align-items:center; gap:12px;
+  padding:13px 14px;
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:14px; cursor:pointer; transition:all .2s;
+}
+.student-pick-item:hover { border-color:var(--gold); background:var(--surface3); }
+.savatar {
+  width:40px; height:40px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-weight:900; font-size:16px; flex-shrink:0;
+}
+.student-pick-name { font-weight:800; font-size:14px; }
+.student-pick-meta { font-size:11px; color:var(--text2); }
+
+#appScreen { display:none; min-height:100vh; flex-direction:column; }
+
+.app-header {
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  padding:12px 16px 11px;
+  display:flex; align-items:center; justify-content:space-between;
+  position:sticky; top:0; z-index:200;
+  backdrop-filter:blur(20px);
+  background:rgba(19,22,31,.92);
+}
+[data-theme="light"] .app-header { background:rgba(255,255,255,.92); }
+.header-left { display:flex; align-items:center; gap:10px; }
+.hlogo { font-family:'Amiri',serif; font-size:28px; color:var(--gold); line-height:1; filter:drop-shadow(0 0 8px var(--glow)); }
+.hinfo-title { font-size:15px; font-weight:900; line-height:1.2; }
+.hinfo-sub { font-size:10px; color:var(--text2); }
+.header-right { display:flex; align-items:center; gap:8px; }
+.streak-pill {
+  display:flex; align-items:center; gap:4px;
+  background:linear-gradient(135deg,#c2410c,#ea580c);
+  color:#fff; padding:5px 11px; border-radius:20px;
+  font-size:12px; font-weight:800;
+  box-shadow:0 3px 12px rgba(234,88,12,.35);
+}
+.role-badge {
+  font-size:10px; font-weight:800; padding:4px 10px; border-radius:99px;
+  letter-spacing:.3px;
+}
+.rb-teacher { background:var(--purple-bg); color:var(--purple); border:1px solid rgba(167,139,250,.3); }
+.rb-student { background:var(--green-bg); color:var(--green); border:1px solid rgba(52,211,153,.3); }
+
+.app-tabs {
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  display:flex; overflow-x:auto; -webkit-overflow-scrolling:touch;
+  scrollbar-width:none; gap:0;
+}
+.app-tabs::-webkit-scrollbar { display:none; }
+.tab {
+  flex:none; padding:13px 18px;
+  font-size:12px; font-weight:800;
+  color:var(--text2); cursor:pointer;
+  border-bottom:2px solid transparent;
+  white-space:nowrap; transition:all .2s;
+  letter-spacing:.2px;
+}
+.tab:hover { color:var(--text); }
+.tab.active { color:var(--gold); border-bottom-color:var(--gold); }
+
+.page { display:none; padding:18px 16px 100px; max-width:680px; margin:0 auto; }
+.page.active { display:block; }
+
+.section-label {
+  font-size:10px; font-weight:900;
+  color:var(--text3); text-transform:uppercase;
+  letter-spacing:2px; margin:20px 0 10px;
+}
+.card {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:18px 16px;
+  margin-bottom:12px;
+}
+.card-title {
+  font-size:11px; font-weight:900; color:var(--text3);
+  text-transform:uppercase; letter-spacing:1.5px; margin-bottom:14px;
+}
+
+.btn {
+  display:inline-flex; align-items:center; justify-content:center; gap:6px;
+  padding:11px 18px; border-radius:12px;
+  font-family:'Nunito',sans-serif; font-size:13px; font-weight:800;
+  cursor:pointer; border:none; transition:all .2s; text-decoration:none;
+}
+.btn-gold {
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  color:#000; box-shadow:0 4px 14px rgba(201,147,58,.3);
+}
+.btn-gold:hover { box-shadow:0 6px 20px rgba(201,147,58,.45); transform:translateY(-1px); }
+.btn-ghost { background:var(--surface2); border:1px solid var(--border2); color:var(--text); }
+.btn-ghost:hover { border-color:var(--gold); color:var(--gold); }
+.btn-danger { background:rgba(248,113,113,.1); border:1px solid rgba(248,113,113,.3); color:var(--red); }
+.btn-danger:hover { background:var(--red); color:#fff; }
+.btn-sm { padding:7px 13px; font-size:11px; border-radius:9px; }
+.btn-full { width:100%; }
+.btn-row { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+
+.form-group { margin-bottom:14px; }
+.form-label { font-size:11px; font-weight:800; color:var(--text2); display:block; margin-bottom:6px; letter-spacing:.3px; }
+.form-input {
+  width:100%; background:var(--surface2);
+  border:1px solid var(--border2); color:var(--text);
+  font-family:'Nunito',sans-serif; font-size:13px;
+  padding:11px 13px; border-radius:11px; outline:none;
+  transition:border-color .2s;
+}
+.form-input:focus { border-color:var(--gold); }
+select.form-input { cursor:pointer; }
+textarea.form-input { resize:vertical; min-height:80px; }
+
+.big-pct { font-size:56px; font-weight:900; color:var(--gold); line-height:1; margin-bottom:8px; }
+.pbar-wrap { background:var(--surface3); border-radius:99px; overflow:hidden; }
+.pbar-fill { height:100%; border-radius:99px; transition:width .7s cubic-bezier(.34,1.2,.64,1); background:linear-gradient(90deg,var(--gold),var(--gold3)); }
+.stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:14px 0; }
+.stat-card {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:14px; padding:14px 8px; text-align:center;
+  transition:border-color .2s;
+}
+.stat-card:hover { border-color:var(--border2); }
+.stat-icon { font-size:22px; margin-bottom:5px; }
+.stat-val { font-size:22px; font-weight:900; color:var(--gold); line-height:1; }
+.stat-lbl { font-size:10px; color:var(--text2); margin-top:3px; font-weight:700; }
+
+.module-card {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:18px; margin-bottom:10px; overflow:hidden;
+  transition:border-color .2s;
+}
+.module-card.complete { border-color:rgba(52,211,153,.3); }
+.module-header {
+  padding:14px 16px; display:flex; align-items:center; gap:12px;
+  cursor:pointer; transition:background .15s;
+}
+.module-header:hover { background:var(--surface2); }
+.mod-num {
+  width:36px; height:36px; border-radius:11px;
+  display:flex; align-items:center; justify-content:center;
+  font-weight:900; font-size:14px; color:var(--gold);
+  background:var(--surface2); border:1px solid var(--border2); flex-shrink:0;
+}
+.module-card.complete .mod-num { background:var(--green-bg); color:var(--green); border-color:rgba(52,211,153,.3); }
+.mod-info { flex:1; min-width:0; }
+.mod-title { font-size:14px; font-weight:800; }
+.mod-meta { font-size:11px; color:var(--text2); margin-top:1px; }
+.mini-prog { display:flex; align-items:center; gap:7px; }
+.mini-bar { width:48px; height:4px; background:var(--surface3); border-radius:99px; overflow:hidden; }
+.mini-fill { height:100%; background:var(--gold); border-radius:99px; transition:width .4s; }
+.mini-pct { font-size:10px; color:var(--text2); font-weight:700; }
+.chevron { color:var(--text3); font-size:14px; transition:transform .3s; }
+.module-card.open .chevron { transform:rotate(180deg); }
+.module-body { display:none; border-top:1px solid var(--border); }
+.module-card.open .module-body { display:block; }
+
+.topic-item {
+  display:flex; align-items:flex-start; gap:12px;
+  padding:12px 16px; border-bottom:1px solid var(--border);
+  cursor:pointer; transition:background .15s;
+}
+.topic-item:last-child { border-bottom:none; }
+.topic-item:hover { background:var(--surface2); }
+.cbox {
+  width:22px; height:22px; border-radius:7px;
+  border:2px solid var(--border2); display:flex;
+  align-items:center; justify-content:center;
+  flex-shrink:0; margin-top:1px; transition:all .2s; font-size:12px;
+}
+.topic-item.done .cbox { background:var(--green); border-color:var(--green); color:#fff; }
+.topic-content { flex:1; }
+.topic-name { font-size:13px; font-weight:700; line-height:1.3; }
+.topic-item.done .topic-name { color:var(--text2); text-decoration:line-through; }
+.topic-desc { font-size:11px; color:var(--text2); margin-top:3px; line-height:1.4; }
+.topic-arabic { font-family:'Amiri',serif; font-size:15px; color:var(--gold); margin-top:3px; direction:rtl; }
+.topic-week { font-size:10px; color:var(--purple); font-weight:800; background:var(--purple-bg); padding:2px 8px; border-radius:99px; flex-shrink:0; margin-top:2px; white-space:nowrap; }
+
+.announce-item {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:16px; padding:16px; margin-bottom:10px;
+  border-left:3px solid var(--gold);
+  position:relative;
+}
+.ann-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; }
+.ann-meta { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.ann-type {
+  font-size:10px; font-weight:800; padding:3px 9px; border-radius:99px;
+  letter-spacing:.3px;
+}
+.atype-info { background:rgba(201,147,58,.15); color:var(--gold2); }
+.atype-lesson { background:var(--blue-bg); color:var(--blue); }
+.atype-link { background:var(--green-bg); color:var(--green); }
+.ann-date { font-size:10px; color:var(--text3); }
+.ann-target { font-size:10px; color:var(--text2); background:var(--surface2); padding:2px 8px; border-radius:99px; }
+.ann-text { font-size:13px; line-height:1.65; color:var(--text); white-space:pre-wrap; }
+.ann-del { position:absolute; top:12px; right:12px; background:none; border:none; color:var(--text3); font-size:16px; cursor:pointer; padding:4px; border-radius:6px; transition:color .2s; }
+.ann-del:hover { color:var(--red); }
+
+.chat-list { display:flex; flex-direction:column; gap:8px; }
+.chat-list-item {
+  display:flex; align-items:center; gap:12px;
+  padding:13px 14px; background:var(--surface);
+  border:1px solid var(--border); border-radius:14px;
+  cursor:pointer; transition:all .2s;
+}
+.chat-list-item:hover { border-color:var(--gold); background:var(--surface2); }
+.chat-avatar {
+  width:42px; height:42px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-weight:900; font-size:17px; flex-shrink:0;
+}
+.chat-name { font-weight:800; font-size:14px; }
+.chat-preview { font-size:11px; color:var(--text2); margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:180px; }
+.chat-time { font-size:10px; color:var(--text3); margin-left:auto; flex-shrink:0; }
+
+.chat-window { display:flex; flex-direction:column; height:calc(100dvh - 180px); min-height:400px; }
+.chat-win-header { display:flex; align-items:center; gap:10px; padding-bottom:12px; border-bottom:1px solid var(--border); margin-bottom:10px; }
+.chat-win-back { background:var(--surface2); border:1px solid var(--border2); color:var(--text); padding:8px 13px; border-radius:10px; font-family:'Nunito',sans-serif; font-size:12px; font-weight:800; cursor:pointer; }
+.chat-msgs { flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:8px; padding:4px 0 10px; }
+.bubble-wrap { display:flex; flex-direction:column; }
+.bubble-wrap.mine { align-items:flex-end; }
+.bubble-wrap.theirs { align-items:flex-start; }
+.bubble {
+  max-width:78%; padding:10px 14px;
+  font-size:13px; line-height:1.5; word-break:break-word;
+}
+.bubble.mine { background:linear-gradient(135deg,var(--gold),var(--gold2)); color:#000; border-radius:18px 18px 4px 18px; }
+.bubble.theirs { background:var(--surface2); border:1px solid var(--border2); border-radius:18px 18px 18px 4px; }
+.bubble-time { font-size:10px; color:var(--text3); margin-top:3px; padding:0 4px; }
+.chat-input-bar { display:flex; gap:8px; padding-top:10px; border-top:1px solid var(--border); }
+.chat-input-field {
+  flex:1; background:var(--surface2); border:1px solid var(--border2);
+  color:var(--text); font-family:'Nunito',sans-serif; font-size:13px;
+  padding:11px 14px; border-radius:14px; outline:none; transition:border-color .2s;
+}
+.chat-input-field:focus { border-color:var(--gold); }
+.chat-send-btn { background:linear-gradient(135deg,var(--gold),var(--gold2)); border:none; color:#000; padding:11px 18px; border-radius:14px; font-family:'Nunito',sans-serif; font-size:13px; font-weight:900; cursor:pointer; transition:transform .15s; }
+.chat-send-btn:active { transform:scale(.95); }
+
+.cal-nav { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+.cal-month-label { font-size:20px; font-weight:900; }
+.cal-arrow { background:var(--surface2); border:1px solid var(--border2); color:var(--text); width:38px; height:38px; border-radius:10px; cursor:pointer; font-size:20px; display:flex; align-items:center; justify-content:center; transition:all .2s; }
+.cal-arrow:hover { border-color:var(--gold); color:var(--gold); }
+.cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; margin-bottom:18px; }
+.cal-dayname { text-align:center; font-size:10px; font-weight:800; color:var(--text3); padding:6px 0; }
+.cal-cell {
+  text-align:center; padding:7px 2px 9px;
+  border-radius:10px; font-size:13px; font-weight:700;
+  cursor:pointer; transition:all .15s;
+  position:relative; min-height:40px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+}
+.cal-cell:hover { background:var(--surface2); }
+.cal-cell.today { background:var(--gold); color:#000; font-weight:900; }
+.cal-cell.has-ev::after {
+  content:''; position:absolute; bottom:4px; left:50%; transform:translateX(-50%);
+  width:4px; height:4px; border-radius:50%; background:var(--blue);
+}
+.cal-cell.today.has-ev::after { background:#000; }
+.cal-cell.dim { opacity:.3; }
+.cal-cell.selected { background:var(--surface3); border:1px solid var(--border2); }
+
+.lesson-card {
+  background:var(--surface); border:1px solid var(--border);
+  border-left:3px solid var(--blue);
+  border-radius:0 14px 14px 0; padding:13px 14px; margin-bottom:8px;
+  display:flex; align-items:center; gap:10px;
+}
+.lesson-time { font-size:13px; font-weight:800; color:var(--blue); flex-shrink:0; }
+.lesson-body { flex:1; }
+.lesson-title-text { font-size:13px; font-weight:800; }
+.lesson-student-badge { font-size:10px; color:var(--text2); background:var(--surface2); padding:2px 8px; border-radius:99px; margin-top:3px; display:inline-block; }
+.lesson-del-btn { background:none; border:none; color:var(--text3); font-size:18px; cursor:pointer; padding:4px; border-radius:6px; transition:color .2s; flex-shrink:0; }
+.lesson-del-btn:hover { color:var(--red); }
+
+.student-card {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:16px; padding:14px 16px; margin-bottom:10px;
+  display:flex; align-items:center; gap:12px;
+  transition:border-color .2s;
+}
+.student-card:hover { border-color:var(--border2); }
+.s-info { flex:1; }
+.s-name { font-size:15px; font-weight:900; }
+.s-meta { font-size:11px; color:var(--text2); margin-top:2px; }
+.s-pbar { margin-top:7px; }
+.s-actions { display:flex; gap:7px; }
+
+.rule-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:16px; margin-bottom:12px; }
+.rule-head { font-size:15px; font-weight:900; color:var(--gold); margin-bottom:5px; display:flex; align-items:center; gap:9px; }
+.rule-arabic-t { font-family:'Amiri',serif; font-size:20px; color:var(--gold2); }
+.rule-def { font-size:12px; color:var(--text2); margin-bottom:9px; line-height:1.55; }
+.rule-box { font-size:12px; color:var(--text); background:var(--surface2); border-radius:9px; padding:9px 11px; margin-bottom:7px; line-height:1.55; }
+.rule-ex { font-family:'Amiri',serif; font-size:18px; color:var(--blue); direction:rtl; text-align:right; margin-top:7px; }
+.letters-row { display:flex; flex-wrap:wrap; gap:5px; margin-top:8px; }
+.lchip { font-family:'Amiri',serif; font-size:19px; color:var(--gold); background:var(--surface2); border:1px solid var(--border2); padding:2px 11px; border-radius:8px; }
+
+.settings-section { margin-bottom:24px; }
+.settings-section-title { font-size:11px; font-weight:900; color:var(--text3); text-transform:uppercase; letter-spacing:2px; margin-bottom:10px; }
+.setting-row {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 16px; background:var(--surface);
+  border:1px solid var(--border); border-radius:13px;
+  margin-bottom:8px; transition:border-color .2s;
+}
+.setting-row:hover { border-color:var(--border2); }
+.setting-info { flex:1; }
+.setting-name { font-size:14px; font-weight:800; }
+.setting-desc { font-size:11px; color:var(--text2); margin-top:1px; }
+.toggle {
+  width:48px; height:26px; background:var(--surface3);
+  border-radius:99px; cursor:pointer; position:relative;
+  border:1px solid var(--border2); transition:background .3s; flex-shrink:0;
+}
+.toggle.on { background:var(--gold); border-color:var(--gold); }
+.toggle::after {
+  content:''; position:absolute; top:2px; left:2px;
+  width:20px; height:20px; border-radius:50%;
+  background:#fff; transition:transform .3s;
+  box-shadow:0 2px 6px rgba(0,0,0,.3);
+}
+.toggle.on::after { transform:translateX(22px); }
+.install-steps { display:flex; flex-direction:column; gap:10px; }
+.install-step { display:flex; align-items:flex-start; gap:10px; }
+.step-num { width:26px; height:26px; border-radius:50%; background:var(--gold); color:#000; font-weight:900; font-size:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
+.step-text { font-size:13px; line-height:1.5; color:var(--text2); }
+.step-text b { color:var(--text); }
+.empty-state { text-align:center; padding:44px 20px; }
+.empty-icon { font-size:52px; margin-bottom:12px; opacity:.6; }
+.empty-title { font-size:15px; font-weight:800; color:var(--text2); }
+.empty-sub { font-size:12px; color:var(--text3); margin-top:6px; line-height:1.5; }
+.toast {
+  position:fixed; bottom:28px; left:50%;
+  transform:translateX(-50%) translateY(80px);
+  background:var(--surface); border:1px solid var(--border2);
+  color:var(--text); padding:11px 22px; border-radius:99px;
+  font-size:13px; font-weight:800; z-index:999;
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+  pointer-events:none; white-space:nowrap;
+  box-shadow:0 8px 32px rgba(0,0,0,.4);
+}
+.toast.show { transform:translateX(-50%) translateY(0); }
+.divider { height:1px; background:var(--border); margin:8px 0; }
+@media(max-width:360px){
+  .login-cards { flex-direction:column; max-width:240px; }
+  .stats-grid { gap:6px; }
+  .stat-val { font-size:18px; }
+}
+.tip-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:16px; margin-bottom:12px; display:flex; gap:12px; }
+.tip-icon { font-size:28px; flex-shrink:0; }
+.tip-title { font-size:14px; font-weight:800; color:var(--gold); margin-bottom:5px; }
+.tip-text { font-size:12px; color:var(--text2); line-height:1.6; }
+.tip-text b { color:var(--text); }
+</style>
+</head>
+<body>
+```<div id="loginScreen">
+  <div class="login-emblem">تجويد</div>
+  <div class="login-title">Таджвид</div>
+  <div class="login-sub">Система обучения таджвиду</div>
+  <div class="login-cards">
+    <div class="login-card teacher-card" onclick="openPinModal()">
+      <span class="login-card-icon">👨‍🏫</span>
+      <div class="login-card-title">Учитель</div>
+      <div class="login-card-desc">Управление&nbsp;учениками, расписание, объявления</div>
+    </div>
+    <div class="login-card student-card" onclick="openStudentModal()">
+      <span class="login-card-icon">📚</span>
+      <div class="login-card-title">Ученик</div>
+      <div class="login-card-desc">Мой прогресс, расписание и&nbsp;чат</div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="pinOverlay">
+  <div class="modal">
+    <div class="modal-title">🔐 Вход для учителя</div>
+    <div class="modal-sub">Введите PIN-код</div>
+    <div class="pin-dots"><div class="pin-dot" id="d0"></div><div class="pin-dot" id="d1"></div><div class="pin-dot" id="d2"></div><div class="pin-dot" id="d3"></div></div>
+    <div class="numpad">
+      <button class="num-btn" onclick="pn('1')">1</button>
+      <button class="num-btn" onclick="pn('2')">2</button>
+      <button class="num-btn" onclick="pn('3')">3</button>
+      <button class="num-btn" onclick="pn('4')">4</button>
+      <button class="num-btn" onclick="pn('5')">5</button>
+      <button class="num-btn" onclick="pn('6')">6</button>
+      <button class="num-btn" onclick="pn('7')">7</button>
+      <button class="num-btn" onclick="pn('8')">8</button>
+      <button class="num-btn" onclick="pn('9')">9</button>
+      <button class="num-btn" onclick="pn('0')" style="grid-column:2">0</button>
+      <button class="num-btn" onclick="pndel()">⌫</button>
+    </div>
+    <div class="pin-error" id="pinErr"></div>
+    <button class="btn btn-ghost btn-full" style="margin-top:12px;" onclick="closeOverlay('pinOverlay')">Отмена</button>
+  </div>
+</div>
+
+<div class="overlay" id="studentOverlay">
+  <div class="modal">
+    <div class="modal-title">📚 Выберите профиль</div>
+    <div class="modal-sub">Нажмите на своё имя</div>
+    <div class="student-pick-list" id="studentPickList"></div>
+    <button class="btn btn-ghost btn-full" style="margin-top:12px;" onclick="closeOverlay('studentOverlay')">Отмена</button>
+  </div>
+</div>
+
+<div class="overlay" id="addStudentOverlay">
+  <div class="modal">
+    <div class="modal-title">➕ Добавить ученика</div>
+    <div class="modal-sub">Введите имя</div>
+    <div class="form-group" style="margin-top:16px;"><input class="form-input" id="newStudentName" placeholder="Имя ученика" maxlength="30"></div>
+    <div class="btn-row"><button class="btn btn-gold" style="flex:1;" onclick="addStudent()">Добавить</button><button class="btn btn-ghost" onclick="closeOverlay('addStudentOverlay')">Отмена</button></div>
+  </div>
+</div>
+
+<div class="overlay" id="addLessonOverlay">
+  <div class="modal">
+    <div class="modal-title">📅 Новый урок</div>
+    <div style="margin-top:16px;">
+      <div class="form-group"><label class="form-label">Ученик</label><select class="form-input" id="lStudent"></select></div>
+      <div class="form-group"><label class="form-label">Дата</label><input class="form-input" type="date" id="lDate"></div>
+      <div class="form-group"><label class="form-label">Время</label><input class="form-input" type="time" id="lTime"></div>
+      <div class="form-group"><label class="form-label">Тема</label><input class="form-input" id="lTitle" placeholder="Например: Изхар"></div>
+      <div class="form-group"><label class="form-label">Описание</label><input class="form-input" id="lDesc" placeholder="Необязательно"></div>
+      <div class="btn-row"><button class="btn btn-gold" style="flex:1;" onclick="saveLesson()">Сохранить</button><button class="btn btn-ghost" onclick="closeOverlay('addLessonOverlay')">Отмена</button></div>
+    </div>
+  </div>
+</div>
+
+<div id="appScreen" style="display:none;">
+  <header class="app-header">
+    <div class="header-left"><div class="hlogo">تجويد</div><div><div class="hinfo-title" id="hTitle">Таджвид</div><div class="hinfo-sub" id="hSub">Добро пожаловать</div></div></div>
+    <div class="header-right"><div class="streak-pill" id="streakEl" style="display:none;">🔥 <span id="streakNum">0</span></div><div class="role-badge" id="roleBadge"></div></div>
+  </header>
+  <div class="app-tabs" id="appTabs"></div>
+
+  <div class="page" id="page-students">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;"><div style="font-size:18px;font-weight:900;">Мои ученики</div><button class="btn btn-gold btn-sm" id="btnAddStudent" onclick="openAddStudentModal()">+ Добавить</button></div>
+    <div id="studentList"></div>
+    <div id="studentDetailView" style="display:none;"><button class="btn btn-ghost btn-sm" onclick="hideStudentDetail()" style="margin-bottom:14px;">← Назад</button><div id="studentDetailContent"></div></div>
+  </div>
+
+  <div class="page" id="page-announce">
+    <div id="announceForm" style="display:none;">
+      <div class="card"><div class="card-title">📢 Новое объявление</div>
+      <div class="form-group"><label class="form-label">Тип</label><select class="form-input" id="annType"><option value="info">📌 Информация</option><option value="lesson">📅 Урок / встреча</option><option value="link">🔗 Ссылка на урок</option></select></div>
+      <div class="form-group"><label class="form-label">Кому</label><select class="form-input" id="annTarget"></select></div>
+      <div class="form-group"><label class="form-label">Текст</label><textarea class="form-input" id="annText" rows="4" placeholder="Напишите объявление..."></textarea></div>
+      <button class="btn btn-gold btn-full" onclick="publishAnn()">Опубликовать</button></div>
+    </div>
+    <div class="section-label">Все объявления</div>
+    <div id="annList"></div>
+  </div>
+
+  <div class="page" id="page-chat">
+    <div id="chatListView"><div class="section-label">Выберите ученика</div><div class="chat-list" id="chatList"></div></div>
+    <div id="chatWinView" style="display:none;"></div>
+  </div>
+
+  <div class="page" id="page-calendar">
+    <div id="calTeacherBtn" style="display:none;margin-bottom:14px;"><button class="btn btn-gold btn-full" onclick="openAddLesson()">+ Добавить урок</button></div>
+    <div class="cal-nav"><button class="cal-arrow" onclick="calPrev()">‹</button><div class="cal-month-label" id="calLabel"></div><button class="cal-arrow" onclick="calNext()">›</button></div>
+    <div class="cal-grid" id="calGrid"></div>
+    <div class="section-label" id="calSubLabel">Уроки в этом месяце</div>
+    <div id="calLessons"></div>
+  </div><div class="page" id="page-progress">
+  <div class="card"><div class="card-title">Общий прогресс</div><div class="big-pct" id="bigPct">0%</div><div class="pbar-wrap" style="height:10px;margin-bottom:6px;"><div class="pbar-fill" id="bigBar" style="width:0%"></div></div><div style="font-size:12px;color:var(--text2);" id="bigLabel">0 из 0 тем</div></div>
+  <div class="stats-grid"><div class="stat-card"><div class="stat-icon">🔥</div><div class="stat-val" id="ss0">0</div><div class="stat-lbl">Дней подряд</div></div><div class="stat-card"><div class="stat-icon">✅</div><div class="stat-val" id="ss1">0</div><div class="stat-lbl">Пройдено</div></div><div class="stat-card"><div class="stat-icon">📦</div><div class="stat-val" id="ss2">0</div><div class="stat-lbl">Модулей</div></div></div>
+  <div class="section-label">По модулям</div><div id="progressMods"></div>
+</div>
+
+<div class="page" id="page-modules"><div id="modulesWrap"></div></div>
+
+<div class="page" id="page-myann"><div class="section-label">Объявления</div><div id="myAnnList"></div></div>
+
+<div class="page" id="page-mychat"><div id="myChatWrap" style="display:flex;flex-direction:column;height:calc(100dvh - 180px);"></div></div>
+
+<div class="page" id="page-rules">
+  <div class="rule-card"><div class="rule-head"><span class="rule-arabic-t">إظهار</span> Изхар — Ясность</div><div class="rule-def">Нун с сукуном или танвин читается чётко перед горловыми буквами.</div><div class="rule-box">📌 Буквы изхара (6 горловых):</div><div class="letters-row"><span class="lchip">ء</span><span class="lchip">ه</span><span class="lchip">ع</span><span class="lchip">ح</span><span class="lchip">غ</span><span class="lchip">خ</span></div><div class="rule-ex">{ حَاسِدٍ إِذَا ، مِنْ خَوْفٍ }</div></div>
+  <div class="rule-card"><div class="rule-head"><span class="rule-arabic-t">إدغام</span> Идгам — Слияние</div><div class="rule-def">Нун сливается со следующей буквой.</div><div class="rule-box">🔊 С гунной (2 харакат) — يَنْمُو</div><div class="letters-row"><span class="lchip">ي</span><span class="lchip">ن</span><span class="lchip">م</span><span class="lchip">و</span></div><div class="rule-box">🔇 Без гунны — لر</div><div class="letters-row"><span class="lchip">ل</span><span class="lchip">ر</span></div><div class="rule-ex">{ لَهَبٍ وَتَبَّ ، فَمَن يَعْمَلْ }</div></div>
+  <div class="rule-card"><div class="rule-head"><span class="rule-arabic-t">إقلاب</span> Иклаб — Замена</div><div class="rule-def">Нун превращается в мим с гунной 2 харакат.</div><div class="rule-box">📌 Только перед буквой ب</div><div class="rule-ex">{ بِذَنبِهِمْ ، أَنبِئْهُم }</div></div>
+  <div class="rule-card"><div class="rule-head"><span class="rule-arabic-t">إخفاء</span> Ихфа — Скрытие</div><div class="rule-def">Нун скрывается с носовым звуком 2 харакат перед 15 буквами.</div><div class="rule-box" style="direction:rtl;text-align:right;font-size:13px;">صِفْ ذَا ثَنَا كَمْ جَادَ شَخْصٌ قَدْ سَمَا<br>دُمْ طَيِّبًا زِدْ فِي تُقًى ضَعْ ظَالِمَا</div><div class="rule-ex">{ نَارًا ذَاتَ ، مِن شَرٍّ }</div></div>
+  <div class="rule-card"><div class="rule-head"><span class="rule-arabic-t">قلقلة</span> Калькаля — Вибрация</div><div class="rule-def">Взрывное произношение при сукуне.</div><div class="rule-box">📌 Буквы: قطبجد</div><div class="letters-row"><span class="lchip">ق</span><span class="lchip">ط</span><span class="lchip">ب</span><span class="lchip">ج</span><span class="lchip">د</span></div><div class="rule-ex">{ قُلْ أَعُوذُ ، يَجْعَلْ ، يَدْخُلْ }</div></div>
+  <div class="rule-card"><div class="rule-head"><span class="rule-arabic-t">مدّ</span> Мадд — Долгота</div><div class="rule-def">Удлинение гласных. Буквы мадда: ا و ي</div><div class="rule-box"><b>Табии</b> — 2 харакат (без причины рядом)<br><b>Муттасиль</b> — 4–5 (хамза в том же слове)<br><b>Мунфасиль</b> — 2–4–6 (хамза в следующем слове)<br><b>Ариз</b> — 2–4–6 (остановка на конце слова)<br><b>Лязим</b> — 6 харакат (постоянный сукун/ташдид)</div><div class="rule-ex">{ الْعَالَمِينَ ، الْكَافِرُونَ }</div></div>
+  <div class="rule-card"><div class="rule-head">Буква <span class="rule-arabic-t">ر</span> — Тафхим / Таркик</div><div class="rule-box"><b>Тафхим (твёрдо):</b> при фатхе или дамме — رَحِيم، رُسُل<br><b>Таркик (мягко):</b> при касре — رِجَال</div></div>
+  <div class="rule-card"><div class="rule-head">Артикль <span class="rule-arabic-t">ال</span></div><div class="rule-box"><b>Изхар камария</b> (лям ясно, лунные):<br>ا ب ج ح خ ع غ ف ق ك م ه و ي<br><br><b>Идгам шамсия</b> (лям сливается, солнечные):<br>ت ث د ذ ر ز س ش ص ض ط ظ ل ن</div></div>
+</div>  <div class="page" id="page-tips">
+    <div class="tip-card"><div class="tip-icon">⏱</div><div><div class="tip-title">15 минут в день — лучше, чем 2 часа в неделю</div><div class="tip-text">Короткие ежедневные занятия дают <b>в 3 раза лучший результат</b>. Выберите удобное время: утро, обед или перед сном.</div></div></div>
+    <div class="tip-card"><div class="tip-icon">🎧</div><div><div class="tip-title">Слушайте в пути</div><div class="tip-text">Включайте <b>суру Мульк в исполнении Мишари Рашид</b>. Слух запомнит правила быстрее, чем чтение книги.</div></div></div>
+    <div class="tip-card"><div class="tip-icon">📖</div><div><div class="tip-title">Учите правила на знакомых сурах</div><div class="tip-text"><b>Сура Мульк и суры 78–114</b> содержат все базовые правила таджвида.</div></div></div>
+    <div class="tip-card"><div class="tip-icon">🔁</div><div><div class="tip-title">Повторение — ключ</div><div class="tip-text">Перед каждым новым правилом <b>повторите предыдущее за 2–3 минуты</b> — метод интервальных повторений.</div></div></div>
+    <div class="tip-card"><div class="tip-icon">✍️</div><div><div class="tip-title">Один пример — лучше ста теорий</div><div class="tip-text">После изучения правила найдите <b>5 примеров в суре Мульк</b> и запишите их.</div></div></div>
+    <div class="tip-card"><div class="tip-icon">🔥</div><div><div class="tip-title">Не бросайте — даже 5 минут считается</div><div class="tip-text">Нет времени? <b>Просто повторите одно правило</b>. Стрик сохранится.</div></div></div>
+    <div class="tip-card"><div class="tip-icon">🎯</div><div><div class="tip-title">Цель — читать суру Мульк правильно</div><div class="tip-text"><b>Через 3 месяца</b> вы сможете читать суру Мульк со всеми правилами таджвида.</div></div></div>
+    <div class="tip-card"><div class="tip-icon">👨‍🏫</div><div><div class="tip-title">Принцип обучения</div><div class="tip-text"><b>1 правило за раз</b> — не переходим дальше, пока не закрепили.<br><b>Практика на Коране</b> — каждое правило на аятах.<br><b>Вопрос–ответ</b> — учитель спрашивает, ученик отвечает.<br><b>Повторение раз в неделю</b> — весь пройденный материал.</div></div></div>
+  </div>
+
+  <div class="page" id="page-settings">
+    <div class="settings-section"><div class="settings-section-title">🎨 Внешний вид</div><div class="setting-row"><div class="setting-info"><div class="setting-name">Тёмная тема</div><div class="setting-desc">Переключить светлую / тёмную тему</div></div><div class="toggle" id="themeToggle" onclick="toggleTheme()"></div></div></div>
+    <div class="settings-section"><div class="settings-section-title">💾 Резервное копирование</div><button class="btn btn-gold btn-full" onclick="exportData()" style="margin-bottom:10px;">📤 Экспорт всех данных</button><label class="btn btn-ghost btn-full" style="display:block;text-align:center;cursor:pointer;">📂 Импорт из файла<input type="file" accept=".json" style="display:none;" onchange="importData(this)"></label><div style="margin-top:12px; font-size:11px; color:var(--text3);">Отправьте файл ученику, он загрузит его через эту кнопку</div></div>
+    <div class="settings-section" id="settingsAccountSection"><div class="settings-section-title">👤 Аккаунт</div><div class="setting-row"><div class="setting-info"><div class="setting-name" id="settingsRoleName">—</div><div class="setting-desc" id="settingsRoleDesc">Текущий пользователь</div></div></div><div class="setting-row" style="cursor:pointer;" onclick="switchUser()"><div class="setting-info"><div class="setting-name">Сменить пользователя</div><div class="setting-desc">Вернуться к экрану выбора</div></div><span style="color:var(--text3);font-size:18px;">›</span></div></div>
+    <div class="settings-section" id="settingsChatSection" style="display:none;"><div class="settings-section-title">💬 Чат</div><div id="settingsChatList"></div></div>
+    <div class="settings-section"><div class="settings-section-title">⚠️ Данные</div><button class="btn btn-danger btn-full" onclick="resetProgress()" id="btnResetProgress" style="display:none;">🗑 Сбросить мой прогресс</button><button class="btn btn-danger btn-full" onclick="doLogout()" style="margin-top:8px;">🚪 Выйти из аккаунта</button></div>
+    <div style="text-align:center;padding:24px 0 8px;color:var(--text3);font-size:11px;">Таджвид — Трекер обучения v2.1</div>
+  </div>
+</div>
+
+<div class="toast" id="toastEl"></div>
+
+<script>
+const MODULES = [
+  {id:'M1',title:'Фундамент',meta:'Алфавит и огласовки • Нед. 1–2',topics:[{id:'t1',name:'Арабский алфавит — 28 букв',desc:'Формы в начале, середине и конце',arabic:'الحروف الهجائية',week:'Нед.1'},{id:'t2',name:'Огласовки: фатха, касра, дамма',desc:'Краткие гласные а, и, у',arabic:'الحركات',week:'Нед.1'},{id:'t3',name:'Сукун — нулевое окончание',desc:'Буква без гласной',arabic:'السكون',week:'Нед.2'},{id:'t4',name:'Ташдид — удвоение',desc:'Две одинаковые буквы → одна долгая',arabic:'الشدة',week:'Нед.2'},{id:'t5',name:'Танвин — три вида',desc:'Двойные харакаты: фатха, касра, дамма',arabic:'التنوين',week:'Нед.2'}]},
+  {id:'M2',title:'Нун с сукуном и Танвин',meta:'4 правила • Нед. 3–5',topics:[{id:'t6',name:'Изхар — ясное чтение',desc:'Перед горловыми: ء ه ع ح غ خ',arabic:'الإظهار',week:'Нед.3'},{id:'t7',name:'Идгам م\'аль-гунна',desc:'Буквы ي ن م و — слияние с носовым',arabic:'الإدغام مع الغنة',week:'Нед.4'},{id:'t8',name:'Идгам биля гунна',desc:'Буквы ل ر — слияние без носового',arabic:'الإدغام بلا غنة',week:'Нед.4'},{id:'t9',name:'Иклаб — нун → мим',desc:'Перед ب, произносится через нос',arabic:'الإقلاب',week:'Нед.5'},{id:'t10',name:'Ихфа — скрытое чтение',desc:'Перед 15 буквами, с носовым',arabic:'الإخفاء',week:'Нед.5'}]},
+  {id:'M3',title:'Мим с сукуном',meta:'3 правила • Нед. 6',topics:[{id:'t11',name:'Ихфа шафауия',desc:'Перед ب — мим скрывается с носовым',arabic:'الإخفاء الشفوي',week:'Нед.6'},{id:'t12',name:'Идгам шафауия',desc:'Перед م — мим сливается с носовым',arabic:'الإدغام الشفوي',week:'Нед.6'},{id:'t13',name:'Изхар шафауия',desc:'Перед остальными — мим ясно',arabic:'الإظهار الشفوي',week:'Нед.6'}]},
+  {id:'M4',title:'Мадд — Долгота',meta:'5 видов • Нед. 7–9',topics:[{id:'t14',name:'Мадд Табии',desc:'2 харакат, без причины рядом',arabic:'المد الطبيعي',week:'Нед.7'},{id:'t15',name:'Мадд Муттасиль',desc:'4–5 харакат, хамза в одном слове',arabic:'المد المتصل',week:'Нед.7'},{id:'t16',name:'Мадд Мунфасиль',desc:'2–4–6 харакат, хамза в следующем слове',arabic:'المد المنفصل',week:'Нед.8'},{id:'t17',name:'Мадд Ариз',desc:'2–4–6 харакат, сукун при остановке',arabic:'المد العارض',week:'Нед.8'},{id:'t18',name:'Мадд Лязим',desc:'6 харакат, постоянный сукун или ташдид',arabic:'المد اللازم',week:'Нед.9'}]},
+  {id:'M5',title:'Калькаля и буква Ра',meta:'Нед. 10–11',topics:[{id:'t19',name:'Калькаля — взрывное чтение',desc:'Буквы قطبجد при сукуне',arabic:'القلقلة',week:'Нед.10'},{id:'t20',name:'Ра Тафхим — твёрдо',desc:'При фатхе или дамме',arabic:'التفخيم',week:'Нед.11'},{id:'t21',name:'Ра Таркик — мягко',desc:'При касре',arabic:'الترقيق',week:'Нед.11'}]},
+  {id:'M6',title:'Артикль ال и Лафзатуллах',meta:'Нед. 12',topics:[{id:'t22',name:'Изхар камария — лунные',desc:'Лам читается ясно (14 лунных букв)',arabic:'القمرية',week:'Нед.12'},{id:'t23',name:'Идгам шамсия — солнечные',desc:'Лам сливается (14 солнечных букв)',arabic:'الشمسية',week:'Нед.12'},{id:'t24',name:'Лафзатуллах',desc:'После фатхи/даммы — твёрдо; после касры — мягко',arabic:'لفظ الجلالة',week:'Нед.12'}]},
+];
+const AVATARS_COLORS = ['#7c6af7','#f97316','#22d3ee','#f43f5e','#84cc16','#eab308','#ec4899','#14b8a6'];
+const RU_MONTHS = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+
+let DB = JSON.parse(localStorage.getItem('tj_v4') || 'null') || { students:[], announcements:[], chat:{}, lessons:[], theme:'dark' };
+let ROLE = null, ME = null, PIN = '', calY = new Date().getFullYear(), calM = new Date().getMonth(), activeChatSid = null;
+function save(){ localStorage.setItem('tj_v4',JSON.stringify(DB)); }
+
+function applyTheme(t){ document.body.setAttribute('data-theme', t||'dark'); const tog = document.getElementById('themeToggle'); if(tog) tog.classList.toggle('on', t==='light'); }
+function toggleTheme(){ DB.theme = DB.theme==='dark'?'light':'dark'; save(); applyTheme(DB.theme); }
+applyTheme(DB.theme);
+
+function openPinModal(){ PIN=''; updDots(); document.getElementById('pinErr').textContent=''; openOverlay('pinOverlay'); }
+function pn(d){ if(PIN.length>=4)return; PIN+=d; updDots(); if(PIN.length===4){ setTimeout(()=>{ if(PIN==='1234'){ closeOverlay('pinOverlay'); enterTeacher(); } else{ document.getElementById('pinErr').textContent='❌ Неверный PIN-код'; PIN=''; updDots(); } },200); } }
+function pndel(){ PIN=PIN.slice(0,-1); updDots(); }
+function updDots(){ for(let i=0;i<4;i++) document.getElementById('d'+i).classList.toggle('filled',i<PIN.length); }
+
+function openStudentModal(){
+  if(!DB.students.length){ toast('⚠️ Учитель ещё не добавил учеников'); return; }
+  const el=document.getElementById('studentPickList');
+  el.innerHTML=DB.students.map(s=>`<div class="student-pick-item" onclick="enterStudent('${s.id}')"><div class="savatar" style="background:${s.color}">${s.name[0].toUpperCase()}</div><div><div class="student-pick-name">${s.name}</div><div class="student-pick-meta">Прогресс: ${calcPct(s.id)}%</div></div></div>`).join('');
+  openOverlay('studentOverlay');
+}
+
+function enterTeacher(){
+  ROLE='teacher'; ME=null;
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('appScreen').style.display='block';
+  document.getElementById('hTitle').textContent='Панель учителя';
+  document.getElementById('hSub').textContent='Управление учениками';
+  document.getElementById('roleBadge').textContent='👨‍🏫 Учитель';
+  document.getElementById('roleBadge').className='role-badge rb-teacher';
+  document.getElementById('streakEl').style.display='none';
+  document.getElementById('settingsRoleName').textContent='Учитель';
+  document.getElementById('settingsRoleDesc').textContent='Вы вошли как учитель';
+  document.getElementById('btnResetProgress').style.display='none';
+  buildTabs([{id:'students',label:'👥 Ученики'},{id:'announce',label:'📢 Доска'},{id:'chat',label:'💬 Чат'},{id:'calendar',label:'📅 Календарь'},{id:'rules',label:'📖 Правила'},{id:'tips',label:'💡 Советы'},{id:'settings',label:'⚙️ Настройки'}]);
+  document.getElementById('calTeacherBtn').style.display='block';
+  document.getElementById('announceForm').style.display='block';
+  document.getElementById('chatListView').style.display='block';
+  document.getElementById('chatWinView').style.display='none';
+  showPage('students');
+  renderStudentList();
+  renderSettingsChat();
+}
+
+function enterStudent(sid){
+  closeOverlay('studentOverlay');
+  const s=DB.students.find(x=>x.id===sid);
+  if(!s)return;
+  ROLE='student'; ME=s;
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('appScreen').style.display='block';
+  document.getElementById('hTitle').textContent=s.name;
+  document.getElementById('hSub').textContent='Ученик';
+  document.getElementById('roleBadge').textContent='📚 Ученик';
+  document.getElementById('roleBadge').className='role-badge rb-student';
+  document.getElementById('streakEl').style.display='flex';
+  document.getElementById('settingsRoleName').textContent=s.name;
+  document.getElementById('settingsRoleDesc').textContent='Вы вошли как ученик';
+  document.getElementById('btnResetProgress').style.display='block';
+  buildTabs([{id:'progress',label:'📊 Прогресс'},{id:'modules',label:'📚 Модули'},{id:'myann',label:'📢 Объявления'},{id:'mychat',label:'💬 Чат'},{id:'calendar',label:'📅 Расписание'},{id:'tips',label:'💡 Советы'},{id:'rules',label:'📖 Правила'},{id:'settings',label:'⚙️ Настройки'}]);
+  document.getElementById('calTeacherBtn').style.display='none';
+  document.getElementById('announceForm').style.display='none';
+  updateStreak(s);
+  showPage('progress');
+  renderProgress();
+  renderModules();
+  renderMyAnn();
+  renderMyChat();
+}
+
+function doLogout(){ if(!confirm('Выйти из аккаунта?'))return; ROLE=null; ME=null; document.getElementById('appScreen').style.display='none'; document.getElementById('loginScreen').style.display='flex'; }
+function switchUser(){ doLogout(); }
+
+function buildTabs(tabs){ const el=document.getElementById('appTabs'); el.innerHTML=tabs.map((t,i)=>`<div class="tab ${i===0?'active':''}" onclick="showPage('${t.id}',this)">${t.label}</div>`).join(''); }
+function showPage(name, tabEl){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  const pg=document.getElementById('page-'+name);
+  if(pg) pg.classList.add('active');
+  if(tabEl){ tabEl.classList.add('active'); } else { document.querySelectorAll('.tab').forEach(t=>{ if(t.innerText.includes(getTabIcon(name))) t.classList.add('active'); }); }
+  if(name==='calendar') renderCalendar();
+  if(name==='announce') renderAnn();
+  if(name==='chat') renderChatList();
+  if(name==='settings'){ applyTheme(DB.theme); renderSettingsChat(); }
+  if(name==='myann') renderMyAnn();
+}
+function getTabIcon(n){ const m={students:'👥',announce:'📢',chat:'💬',calendar:'📅',rules:'📖',settings:'⚙️',progress:'📊',modules:'📚',myann:'📢',mychat:'💬',tips:'💡'}; return m[n]||''; }
+
+function openAddStudentModal(){ if(DB.students.length>=5){toast('⚠️ Максимум 5 учеников');return;} document.getElementById('newStudentName').value=''; openOverlay('addStudentOverlay'); setTimeout(()=>document.getElementById('newStudentName').focus(),300); }
+function addStudent(){
+  const nm=document.getElementById('newStudentName').value.trim();
+  if(!nm){toast('⚠️ Введите имя');return;}
+  if(DB.students.find(s=>s.name.toLowerCase()===nm.toLowerCase())){toast('⚠️ Такое имя уже есть');return;}
+  const s={id:'S'+Date.now(),name:nm,color:AVATARS_COLORS[DB.students.length%AVATARS_COLORS.length],progress:{},streak:0,lastDate:''};
+  DB.students.push(s); DB.chat[s.id]=[]; save();
+  closeOverlay('addStudentOverlay');
+  renderStudentList(); updateAnnTargets(); toast('✅ Ученик добавлен: '+nm);
+}
+function delStudent(sid){
+  const s=DB.students.find(x=>x.id===sid);
+  if(!confirm(`Удалить "${s.name}"? Все данные будут удалены.`))return;
+  DB.students=DB.students.filter(x=>x.id!==sid);
+  delete DB.chat[sid];
+  DB.lessons=DB.lessons.filter(l=>l.studentId!==sid);
+  DB.announcements=DB.announcements.filter(a=>a.target!==sid);
+  save(); renderStudentList(); toast('🗑 Ученик удалён');
+}
+function renderStudentList(){
+  const el=document.getElementById('studentList');
+  if(!el)return;
+  document.getElementById('studentDetailView').style.display='none';
+  el.style.display='block';
+  const btn=document.getElementById('btnAddStudent');
+  if(btn) btn.style.display=DB.students.length>=5?'none':'inline-flex';
+  if(!DB.students.length){ el.innerHTML=`<div class="empty-state"><div class="empty-icon">👤</div><div class="empty-title">Нет учеников</div><div class="empty-sub">Нажмите «+ Добавить»</div></div>`; return; }
+  el.innerHTML=DB.students.map(s=>{ const pct=calcPct(s.id); return `<div class="student-card"><div class="savatar" style="background:${s.color}">${s.name[0].toUpperCase()}</div><div class="s-info"><div class="s-name">${s.name}</div><div class="s-meta">Прогресс: ${pct}% &nbsp;•&nbsp; 🔥 ${s.streak||0} дн.</div><div class="s-pbar"><div class="pbar-wrap" style="height:5px;"><div class="pbar-fill" style="width:${pct}%"></div></div></div></div><div class="s-actions"><button class="btn btn-ghost btn-sm" onclick="showStudentDetail('${s.id}')">📊</button><button class="btn btn-danger btn-sm" onclick="delStudent('${s.id}')">✕</button></div></div>`; }).join('');
+  updateAnnTargets();
+}
+function showStudentDetail(sid){
+  const s=DB.students.find(x=>x.id===sid);
+  document.getElementById('studentList').style.display='none';
+  document.getElementById('studentDetailView').style.display='block';
+  const p=s.progress||{};
+  let h=`<div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;"><div class="savatar" style="background:${s.color};width:50px;height:50px;font-size:20px;">${s.name[0].toUpperCase()}</div><div><div style="font-size:20px;font-weight:900;">${s.name}</div><div style="font-size:12px;color:var(--text2);">Прогресс: ${calcPct(sid)}% &nbsp;•&nbsp; 🔥 ${s.streak||0} дн.</div></div></div>`;
+  MODULES.forEach(m=>{ const done=m.topics.filter(t=>p[t.id]).length; const pct=Math.round(done/m.topics.length*100); h+=`<div class="card" style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span style="font-weight:800;">${m.title}</span><span style="font-size:12px;color:var(--text2);">${done}/${m.topics.length}</span></div><div class="pbar-wrap" style="height:6px;margin-bottom:10px;"><div class="pbar-fill" style="width:${pct}%"></div></div>${m.topics.map(t=>`<div style="display:flex;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px;"><span style="color:${p[t.id]?'var(--green)':'var(--text3)'}">${p[t.id]?'✅':'⬜'}</span><span style="${p[t.id]?'text-decoration:line-through;color:var(--text2)':''}">${t.name}</span></div>`).join('')}</div>`; });
+  document.getElementById('studentDetailContent').innerHTML=h;
+}
+function hideStudentDetail(){ document.getElementById('studentDetailView').style.display='none'; document.getElementById('studentList').style.display='block'; }
+
+function updateAnnTargets(){ const sel=document.getElementById('annTarget'); if(!sel)return; sel.innerHTML='<option value="all">Всем ученикам</option>'+DB.students.map(s=>`<option value="${s.id}">${s.name}</option>`).join(''); }
+function publishAnn(){
+  const text=document.getElementById('annText').value.trim();
+  if(!text){toast('⚠️ Введите текст');return;}
+  DB.announcements.unshift({id:'A'+Date.now(), type:document.getElementById('annType').value, target:document.getElementById('annTarget').value, text, date:new Date().toLocaleString('ru',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}) });
+  save(); document.getElementById('annText').value='';
+  renderAnn(); toast('📢 Опубликовано!');
+}
+function delAnn(id){ DB.announcements=DB.announcements.filter(a=>a.id!==id); save(); renderAnn(); }
+function renderAnn(){
+  const el=document.getElementById('annList');
+  if(!el)return;
+  if(!DB.announcements.length){ el.innerHTML=`<div class="empty-state"><div class="empty-icon">📢</div><div class="empty-title">Нет объявлений</div></div>`; return; }
+  const tl={info:'📌 Информация',lesson:'📅 Урок',link:'🔗 Ссылка'}, tc={info:'atype-info',lesson:'atype-lesson',link:'atype-link'};
+  el.innerHTML=DB.announcements.map(a=>{ const tg=a.target==='all'?'Все':((DB.students.find(s=>s.id===a.target)||{name:'?'}).name); return `<div class="announce-item"><div class="ann-header"><div class="ann-meta"><span class="ann-type ${tc[a.type]}">${tl[a.type]}</span><span class="ann-target">→ ${tg}</span><span class="ann-date">${a.date}</span></div></div><div class="ann-text">${esc(a.text)}</div>${ROLE==='teacher'?`<button class="ann-del" onclick="delAnn('${a.id}')">✕</button>`:''}</div>`; }).join('');
+}
+function renderMyAnn(){
+  const el=document.getElementById('myAnnList');
+  if(!el||!ME)return;
+  const mine=DB.announcements.filter(a=>a.target==='all'||a.target===ME.id);
+  if(!mine.length){ el.innerHTML=`<div class="empty-state"><div class="empty-icon">📢</div><div class="empty-title">Нет объявлений</div><div class="empty-sub">Учитель ещё ничего не написал</div></div>`; return; }
+  const tl={info:'📌 Информация',lesson:'📅 Урок',link:'🔗 Ссылка'}, tc={info:'atype-info',lesson:'atype-lesson',link:'atype-link'};
+  el.innerHTML=mine.map(a=>`<div class="announce-item"><div class="ann-header"><div class="ann-meta"><span class="ann-type ${tc[a.type]}">${tl[a.type]}</span><span class="ann-date">${a.date}</span></div></div><div class="ann-text">${esc(a.text)}</div></div>`).join('');
+}
+
+function renderChatList(){
+  const el=document.getElementById('chatList');
+  if(!el)return;
+  document.getElementById('chatListView').style.display='block';
+  document.getElementById('chatWinView').style.display='none';
+  if(!DB.students.length){ el.innerHTML=`<div class="empty-state"><div class="empty-icon">💬</div><div class="empty-title">Нет учеников</div></div>`; return; }
+  el.innerHTML=DB.students.map(s=>{ const msgs=DB.chat[s.id]||[]; const last=msgs.length?msgs[msgs.length-1].text:'Нет сообщений'; const t=msgs.length?msgs[msgs.length-1].time:''; return `<div class="chat-list-item" onclick="openChatWith('${s.id}')"><div class="chat-avatar" style="background:${s.color}">${s.name[0].toUpperCase()}</div><div style="flex:1;min-width:0;"><div class="chat-name">${s.name}</div><div class="chat-preview">${esc(last)}</div></div>${t?`<div class="chat-time">${t}</div>`:''}</div>`; }).join('');
+}
+function openChatWith(sid){
+  activeChatSid=sid;
+  const s=DB.students.find(x=>x.id===sid);
+  document.getElementById('chatListView').style.display='none';
+  const win=document.getElementById('chatWinView');
+  win.style.display='block';
+  win.innerHTML=`<div class="chat-window"><div class="chat-win-header"><button class="chat-win-back" onclick="closeChatWin()">← Назад</button><div class="chat-avatar" style="background:${s.color};width:34px;height:34px;font-size:14px;">${s.name[0].toUpperCase()}</div><div style="font-weight:800;font-size:14px;">${s.name}</div></div><div class="chat-msgs" id="chatMsgs"></div><div class="chat-input-bar"><input class="chat-input-field" id="chatInp" placeholder="Сообщение..." onkeydown="if(event.key==='Enter')sendTeacherMsg()"><button class="chat-send-btn" onclick="sendTeacherMsg()">▶</button></div></div>`;
+  drawMsgs(sid,'chatMsgs','teacher');
+}
+function closeChatWin(){ activeChatSid=null; document.getElementById('chatListView').style.display='block'; document.getElementById('chatWinView').style.display='none'; renderChatList(); }
+function sendTeacherMsg(){ const inp=document.getElementById('chatInp'); if(!inp||!activeChatSid)return; const t=inp.value.trim(); if(!t)return; if(!DB.chat[activeChatSid]) DB.chat[activeChatSid]=[]; DB.chat[activeChatSid].push({from:'teacher',text:t,time:now()}); save(); inp.value=''; drawMsgs(activeChatSid,'chatMsgs','teacher'); }
+function renderMyChat(){
+  const el=document.getElementById('myChatWrap');
+  if(!el||!ME)return;
+  const sid=ME.id;
+  el.innerHTML=`<div style="font-size:16px;font-weight:900;margin-bottom:12px;">💬 Чат с учителем</div><div class="chat-msgs" id="myChatMsgs" style="flex:1;overflow-y:auto;"></div><div class="chat-input-bar"><input class="chat-input-field" id="myChatInp" placeholder="Написать учителю..." onkeydown="if(event.key==='Enter')sendStudentMsg()"><button class="chat-send-btn" onclick="sendStudentMsg()">▶</button></div>`;
+  drawMsgs(sid,'myChatMsgs',sid);
+}
+function sendStudentMsg(){ const inp=document.getElementById('myChatInp'); if(!inp||!ME)return; const t=inp.value.trim(); if(!t)return; const sid=ME.id; if(!DB.chat[sid]) DB.chat[sid]=[]; DB.chat[sid].push({from:sid,text:t,time:now()}); save(); inp.value=''; drawMsgs(sid,'myChatMsgs',sid); }
+function drawMsgs(sid,elId,myFrom){
+  const el=document.getElementById(elId);
+  if(!el)return;
+  const msgs=DB.chat[sid]||[];
+  if(!msgs.length){ el.innerHTML=`<div class="empty-state" style="padding:20px;"><div class="empty-icon">💬</div><div class="empty-title">Начните диалог</div></div>`; return; }
+  el.innerHTML=msgs.map(m=>{ const mine=m.from===myFrom; return `<div class="bubble-wrap ${mine?'mine':'theirs'}"><div class="bubble ${mine?'mine':'theirs'}">${esc(m.text)}</div><div class="bubble-time">${m.time}</div></div>`; }).join('');
+  el.scrollTop=el.scrollHeight;
+}
+function renderSettingsChat(){
+  const sec=document.getElementById('settingsChatSection'), el=document.getElementById('settingsChatList');
+  if(!sec||!el)return;
+  if(ROLE==='teacher'){
+    sec.style.display='block';
+    el.innerHTML=DB.students.map(s=>`<div class="setting-row" style="cursor:pointer;" onclick="showPage('chat');openChatWith('${s.id}')"><div class="setting-info"><div class="setting-name">${s.name}</div><div class="setting-desc">${(DB.chat[s.id]||[]).length} сообщений</div></div><div class="chat-avatar" style="background:${s.color};width:34px;height:34px;font-size:14px;">${s.name[0].toUpperCase()}</div></div>`).join('') || '<div style="font-size:12px;color:var(--text3);padding:8px;">Нет учеников</div>';
+  } else if(ROLE==='student'){
+    sec.style.display='block';
+    const msgs=ME?DB.chat[ME.id]||[]:[];
+    el.innerHTML=`<div class="setting-row" style="cursor:pointer;" onclick="showPage('mychat')"><div class="setting-info"><div class="setting-name">Чат с учителем</div><div class="setting-desc">${msgs.length} сообщений</div></div><span style="font-size:18px;color:var(--text3);">›</span></div>`;
+  } else { sec.style.display='none'; }
+}
+
+function calPrev(){ calM--; if(calM<0){calM=11;calY--;} renderCalendar(); }
+function calNext(){ calM++; if(calM>11){calM=0;calY++;} renderCalendar(); }
+function renderCalendar(){
+  document.getElementById('calLabel').textContent=RU_MONTHS[calM]+' '+calY;
+  const grid=document.getElementById('calGrid');
+  const RD=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+  let h=RD.map(d=>`<div class="cal-dayname">${d}</div>`).join('');
+  const first=new Date(calY,calM,1);
+  let sd=first.getDay()-1; if(sd<0)sd=6;
+  const dim=new Date(calY,calM+1,0).getDate();
+  const today=new Date().toDateString();
+  const myL=ROLE==='teacher'?DB.lessons:DB.lessons.filter(l=>l.studentId===ME?.id);
+  const lDates=new Set(myL.map(l=>l.date));
+  for(let i=0;i<sd;i++){ const d=new Date(calY,calM,1-sd+i); h+=`<div class="cal-cell dim">${d.getDate()}</div>`; }
+  for(let d=1;d<=dim;d++){
+    const dt=new Date(calY,calM,d);
+    const key=`${calY}-${p2(calM+1)}-${p2(d)}`;
+    const isTod=dt.toDateString()===today;
+    const hasEv=lDates.has(key);
+    h+=`<div class="cal-cell ${isTod?'today':''} ${hasEv?'has-ev':''}" onclick="calDayClick('${key}')">${d}</div>`;
+  }
+  grid.innerHTML=h;
+  renderLessonsMonth();
+}
+function calDayClick(key){
+  const [y,m,d]=key.split('-');
+  document.getElementById('calSubLabel').textContent=`Уроки ${d}.${m} (нажмите ещё раз для месяца)`;
+  const myL=ROLE==='teacher'?DB.lessons:DB.lessons.filter(l=>l.studentId===ME?.id);
+  const day=myL.filter(l=>l.date===key).sort((a,b)=>a.time.localeCompare(b.time));
+  renderLessonsList(day,`Уроки ${d}.${m}.${y}`);
+}
+function renderLessonsMonth(){
+  const myL=ROLE==='teacher'?DB.lessons:DB.lessons.filter(l=>l.studentId===ME?.id);
+  const pref=`${calY}-${p2(calM+1)}`;
+  const ml=myL.filter(l=>l.date.startsWith(pref)).sort((a,b)=>a.date.localeCompare(b.date)||a.time.localeCompare(b.time));
+  renderLessonsList(ml, `Уроки ${RU_MONTHS[calM]} (${ml.length})`);
+}
+function renderLessonsList(list, label){
+  document.getElementById('calSubLabel').textContent=label;
+  const el=document.getElementById('calLessons');
+  if(!list.length){ el.innerHTML=`<div class="empty-state"><div class="empty-icon">📅</div><div class="empty-title">Нет уроков</div></div>`; return; }
+  el.innerHTML=list.map(l=>{ const s=DB.students.find(x=>x.id===l.studentId); const [y,m,d]=l.date.split('-'); return `<div class="lesson-card"><div class="lesson-time">${l.time}</div><div class="lesson-body"><div class="lesson-title-text">${esc(l.title)}</div>${l.desc?`<div style="font-size:11px;color:var(--text2);margin-top:2px;">${esc(l.desc)}</div>`:''}${ROLE==='teacher'&&s?`<div class="lesson-student-badge">${s.name} • ${d}.${m}</div>`:`<div class="lesson-student-badge">${d}.${m}.${y}</div>`}</div>${ROLE==='teacher'?`<button class="lesson-del-btn" onclick="delLesson('${l.id}')">✕</button>`:''}</div>`; }).join('');
+}
+function openAddLesson(){
+  if(!DB.students.length){toast('⚠️ Сначала добавьте учеников');return;}
+  document.getElementById('lStudent').innerHTML=DB.students.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+  document.getElementById('lDate').value=new Date().toISOString().split('T')[0];
+  document.getElementById('lTime').value='18:00';
+  document.getElementById('lTitle').value='';
+  document.getElementById('lDesc').value='';
+  openOverlay('addLessonOverlay');
+}
+function saveLesson(){
+  const sid=document.getElementById('lStudent').value, date=document.getElementById('lDate').value, time=document.getElementById('lTime').value, title=document.getElementById('lTitle').value.trim();
+  if(!date||!time||!title){toast('⚠️ Заполните все поля');return;}
+  DB.lessons.push({id:'L'+Date.now(), studentId:sid, date, time, title, desc:document.getElementById('lDesc').value.trim()});
+  save(); closeOverlay('addLessonOverlay'); renderCalendar(); toast('✅ Урок добавлен!');
+}
+function delLesson(id){ if(!confirm('Удалить урок?'))return; DB.lessons=DB.lessons.filter(l=>l.id!==id); save(); renderCalendar(); toast('🗑 Урок удалён'); }
+
+function updateStreak(s){
+  const td=new Date().toDateString();
+  if(s.lastDate!==td){
+    const yd=new Date(Date.now()-86400000).toDateString();
+    s.streak=s.lastDate===yd?(s.streak||0)+1:1;
+    s.lastDate=td; save();
+  }
+  document.getElementById('streakNum').textContent=s.streak||1;
+}
+function calcPct(sid){
+  const s=DB.students.find(x=>x.id===sid);
+  if(!s)return 0;
+  const total=MODULES.reduce((a,m)=>a+m.topics.length,0);
+  const done=Object.values(s.progress||{}).filter(Boolean).length;
+  return total?Math.round(done/total*100):0;
+}
+function renderProgress(){
+  if(!ME)return;
+  const p=ME.progress||{};
+  const total=MODULES.reduce((a,m)=>a+m.topics.length,0);
+  const done=Object.values(p).filter(Boolean).length;
+  const pct=total?Math.round(done/total*100):0;
+  document.getElementById('bigPct').textContent=pct+'%';
+  document.getElementById('bigBar').style.width=pct+'%';
+  document.getElementById('bigLabel').textContent=`${done} из ${total} тем пройдено`;
+  document.getElementById('ss0').textContent=ME.streak||0;
+  document.getElementById('ss1').textContent=done;
+  let comp=0;
+  const el=document.getElementById('progressMods');
+  el.innerHTML=MODULES.map(m=>{ const md=m.topics.filter(t=>p[t.id]).length; if(md===m.topics.length)comp++; const mp=Math.round(md/m.topics.length*100); return `<div class="card" style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;"><span style="font-weight:800;">${m.title}</span><span style="font-size:12px;color:var(--text2);">${md}/${m.topics.length}</span></div><div class="pbar-wrap" style="height:6px;"><div class="pbar-fill" style="width:${mp}%"></div></div></div>`; }).join('');
+  document.getElementById('ss2').textContent=comp;
+}
+function renderModules(){
+  if(!ME)return;
+  const p=ME.progress||{};
+  document.getElementById('modulesWrap').innerHTML=MODULES.map((m,i)=>{ const md=m.topics.filter(t=>p[t.id]).length; const mp=Math.round(md/m.topics.length*100); const comp=md===m.topics.length; return `<div class="module-card ${comp?'complete':''}" id="mc${m.id}"><div class="module-header" onclick="toggleMod('${m.id}')"><div class="mod-num">${comp?'✓':(i+1)}</div><div class="mod-info"><div class="mod-title">${m.title}</div><div class="mod-meta">${m.meta}</div></div><div class="mini-prog"><div class="mini-bar"><div class="mini-fill" style="width:${mp}%"></div></div><div class="mini-pct">${mp}%</div></div><div class="chevron">▾</div></div><div class="module-body">${m.topics.map(t=>{ const dn=!!p[t.id]; return `<div class="topic-item ${dn?'done':''}" onclick="toggleTopic('${t.id}')"><div class="cbox">${dn?'✓':''}</div><div class="topic-content"><div class="topic-name">${t.name}</div><div class="topic-desc">${t.desc}</div><div class="topic-arabic">${t.arabic}</div></div><div class="topic-week">${t.week}</div></div>`; }).join('')}</div></div>`; }).join('');
+}
+function toggleMod(id){ document.getElementById('mc'+id).classList.toggle('open'); }
+function toggleTopic(id){
+  if(!ME)return;
+  if(!ME.progress) ME.progress={};
+  ME.progress[id]=!ME.progress[id];
+  save(); renderProgress(); renderModules();
+  toast(ME.progress[id]?'✅ Тема пройдена!':'↩️ Отметка снята');
+}
+function resetProgress(){ if(!confirm('Сбросить весь прогресс?'))return; if(ME){ME.progress={};ME.streak=0;save();renderProgress();renderModules();toast('🗑 Прогресс сброшен');} }
+
+function exportData(){
+  const dataStr=JSON.stringify(DB,null,2);
+  const blob=new Blob([dataStr],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=`tajweed_backup_${new Date().toISOString().slice(0,19)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('✅ Резервная копия сохранена');
+}
+function importData(fileInput){
+  const file=fileInput.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      const newDB=JSON.parse(e.target.result);
+      if(newDB.students && newDB.announcements && newDB.chat && newDB.lessons && newDB.theme!==undefined){
+        DB=newDB;
+        save();
+        toast('✅ Данные восстановлены! Перезагрузите страницу');
+        setTimeout(()=>location.reload(),1500);
+      } else toast('❌ Неверный формат файла');
+    } catch(err){ toast('❌ Ошибка чтения файла'); }
+  };
+  reader.readAsText(file);
+}
+
+let pwaPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); pwaPrompt=e; const btn=document.getElementById('pwaInstallBtn'); if(btn) btn.style.display='block'; });
+function doPWAInstall(){ if(pwaPrompt){ pwaPrompt.prompt(); pwaPrompt.userChoice.then(()=>{pwaPrompt=null;}); } }
+
+function openOverlay(id){ document.getElementById(id).classList.add('open'); }
+function closeOverlay(id){ document.getElementById(id).classList.remove('open'); }
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>'); }
+function p2(n){ return String(n).padStart(2,'0'); }
+function now(){ return new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}); }
+let _tt;
+function toast(msg){ const el=document.getElementById('toastEl'); el.textContent=msg; el.classList.add('show'); clearTimeout(_tt); _tt=setTimeout(()=>el.classList.remove('show'),2400); }
+
+document.querySelectorAll('.overlay').forEach(el=>{ el.addEventListener('click',e=>{ if(e.target===el) el.classList.remove('open'); }); });
+document.getElementById('themeToggle').classList.toggle('on', DB.theme==='light');
+updateAnnTargets();
+</script>
+</body>
+</html>
+```
