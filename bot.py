@@ -2,7 +2,7 @@ import asyncio
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
 
-TOKEN = "1880295860:AAHBz_lONagjOAnS77ZkrjUywJfoun4yH_8"
+TOKEN = "1880295860:AAGIIzTkfMBpAIZTt2fmJ3zn63ykxtwJ19c"
 APP_URL = "https://ismail111-cell.github.io/Teacher/"
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
