@@ -7,7 +7,7 @@
 <meta name="theme-color" content="#090b10">
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-/* ========== все ваши стили (оставляем как было, они работают) ========== */
+/* ========== все ваши стили ========== */
 :root {
   --bg: #090b10; --bg2: #0e1118; --surface: #13161f; --surface2: #1c2030;
   --surface3: #242840; --border: #ffffff0f; --border2: #ffffff18;
@@ -226,8 +226,8 @@ body { font-family:'Nunito',sans-serif; background:var(--bg); color:var(--text);
 <div class="toast" id="toastEl"></div>
 
 <script>
-// ---------- НАСТРОЙКИ SUPABASE (ЗАМЕНИТЕ НА СВОИ) ----------
-const supabaseUrl = 'https://ejbeisduwjcpzorezbcr.supabase.co';
+// ---------- НАСТРОЙКИ SUPABASE (исправлено: оставлен /rest/v1/) ----------
+const supabaseUrl = 'https://ejbeisduwjcpzorezbcr.supabase.co/rest/v1/';
 const supabaseAnonKey = 'sb_publishable_1cGJ4Ny_UF7RZSn5cbN6TQ_HjcnEtzN';
 // ------------------------------------------------------------
 
@@ -244,7 +244,7 @@ const MODULES = [
   ]},
   {id:'M2',title:'Нун с сукуном и Танвин',meta:'4 правила • Нед. 3–5',topics:[
     {id:'t6',name:'Изхар — ясное чтение',desc:'Перед горловыми: ء ه ع ح غ خ',arabic:'الإظهار',week:'Нед.3'},
-    {id:'t7',name:'Идгам ма\'аль-гунна',desc:'Буквы ي ن م و — слияние с носовым',arabic:'الإدغام مع الغنة',week:'Нед.4'},
+    {id:'t7',name:'Идгам م\'аль-гунна',desc:'Буквы ي ن م و — слияние с носовым',arabic:'الإدغام مع الغنة',week:'Нед.4'},
     {id:'t8',name:'Идгам биля гунна',desc:'Буквы ل ر — слияние без носового',arabic:'الإدغام بلا غنة',week:'Нед.4'},
     {id:'t9',name:'Иклаб — нун → мим',desc:'Перед ب',arabic:'الإقلاب',week:'Нед.5'},
     {id:'t10',name:'Ихфа — скрытое чтение',desc:'Перед 15 буквами',arabic:'الإخفاء',week:'Нед.5'}
